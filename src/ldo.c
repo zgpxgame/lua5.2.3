@@ -297,7 +297,12 @@ int luaD_precall (lua_State *L, StkId func, int nresults) {
   lua_CFunction f;
   CallInfo *ci;
   int n;  /* number of arguments (Lua) or returns (C) */
-  ptrdiff_t funcr = savestack(L, func);
+  /* 
+   * 保存栈恢复地址 r --> restore 
+   * 因为后面的luaD_checkstack等函数可能导致L->stack重新分配
+   * 所以这里记录一下偏移，在完成分配后再恢复
+  */
+  ptrdiff_t funcr = savestack(L, func); 
   switch (ttype(func)) {
     case LUA_TLCF:  /* light C function */
       f = fvalue(func);
